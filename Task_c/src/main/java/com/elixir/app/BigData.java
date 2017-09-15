@@ -9,6 +9,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
+
 public class BigData {
 	
  public static void main(String[] args) throws Exception {
@@ -20,9 +21,9 @@ public class BigData {
     }
     Job job = Job.getInstance(conf, "Big Data");
     job .setJarByClass(BigData.class);
-    
+    job.setNumReduceTasks(1);
     job.setMapperClass(TokenizerMapper.class);
-    job.setCombinerClass(IntSumReducer.class);
+    //job.setCombinerClass(IntSumReducer.class);
     job.setReducerClass(IntSumReducer.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(IntWritable.class);

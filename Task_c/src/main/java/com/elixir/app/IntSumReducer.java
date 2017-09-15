@@ -5,14 +5,26 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 
 public  class IntSumReducer 
-     extends Reducer<Text,IntWritable,Text,IntWritable> {
+     extends Reducer<Text,IntWritable,IntWritable,Text> {
   private IntWritable result = new IntWritable();
-  Map<Text,IntWritable> map  =  new HashMap<Text, IntWritable>();
-  public void reduce(Text key, Iterable<IntWritable> values, 
+  Map<Text,IntWritable> map  =  new HashMap<>();
+  private TreeMap<Text, IntWritable> tmaps;
+  @Override
+  protected void setup(Context context) throws IOException, InterruptedException {
+    super.setup(context);
+    tmaps = new TreeMap<>();
+
+  }
+
+
+
+  public void reduce(Text key, Iterable<IntWritable> values,
                      Context context
                      ) throws IOException, InterruptedException {
     int sum = 0;
@@ -20,43 +32,24 @@ public  class IntSumReducer
       sum += val.get();
     }
     result.set(sum);
-
-
-    map.put(key,  result);
-    //context.write(key, result);
+    tmaps.put(key,  result);
+    if(tmaps.size()>10)
+    {
+      tmaps.remove(tmaps.firstKey());
+    }
+    //context.write(result, key);
   }
 
   @Override
   protected void cleanup(Context context) throws IOException, InterruptedException {
     super.cleanup(context);
 
-    Map sortedMap = sortByValues(map);
+    //Map<Text, IntWritable> sortedMap = sortByValues(map);
 
     int counter = 0;
-    for (Object key: (sortedMap.keySet())) {
-      counter++;
-      if (counter == 20) {
-        break;
-      }
-      context.write((Text) key, (IntWritable) sortedMap.get(key));
+    for (Text key: (tmaps.descendingKeySet())) {
+      context.write( tmaps.get(key),key);
     }
   }
-
-public static <K, V extends Comparable<? super V>> Map<K, V>
-sortByValues(Map<K, V> map) {
-  List<Map.Entry<K, V>> list = new LinkedList<>(map.entrySet());
-  Collections.sort( list, new Comparator<Map.Entry<K, V>>() {
-    @Override
-    public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
-      return (o1.getValue()).compareTo(o2.getValue());
-    }
-  });
-
-  Map<K, V> result = new LinkedHashMap<>();
-  for (Map.Entry<K, V> entry : list) {
-    result.put(entry.getKey(), entry.getValue());
-  }
-  return result;
-}
 
 }
