@@ -105,19 +105,6 @@ public class E2 extends Configured implements Tool {
     job.setOutputKeyClass(IntWritable.class);
     job.setOutputValueClass(IntWritable.class);
     job.waitForCompletion(true);
-    //Job job2 = Job.getInstance(conf);
-    //job2.setJobName("query2");
-    //job2.setJarByClass(E2.class);
-
-    //FileInputFormat.setInputPaths(job2, args[1]);
-
-    //job2.setMapperClass(E1Mapper.class);
-    //job2.setReducerClass(LongSumReducer.class);
-
-    //FileOutputFormat.setOutputPath(job2, new Path(args[2]));
-    //job2.setOutputKeyClass(LongWritable.class);
-    //job2.setOutputValueClass(LongWritable.class);
-    //job2.waitForCompletion(true);
     return 0;
   }
     
