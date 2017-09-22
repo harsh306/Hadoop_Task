@@ -7,17 +7,16 @@ import org.apache.hadoop.mapreduce.Mapper;
 import java.io.IOException;
 
 public  class TokenizerMapper 
-extends Mapper<Object, Text, Text, IntWritable>{
+extends Mapper<Object, Text, IntWritable, IntWritable>{
 
 private final static IntWritable one = new IntWritable(1);
-private Text word = new Text();
-
+	private final static IntWritable two = new IntWritable(1);
 
 	public void map(Object key, Text value, Context context
 	             ) throws IOException,	 InterruptedException {
 		String a = value.toString();
 		String[] arr = a.split(",");
-		word.set(String.valueOf(arr[2]));
-		context.write(word, one);
+		two.set(Integer.parseInt(arr[2]));
+		context.write(two, one);
 	}
 }
